@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 
 def otsu():
-    img = cv.imread('ocr/1-5.png')
+    img = cv.imread('ocr/1-1.png')
     img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     # global thresholding
     ret1, th1 = cv.threshold(img_gray, 127, 255, cv.THRESH_BINARY)
