@@ -2,16 +2,25 @@ import numpy as np
 import cv2
 from matplotlib import  pyplot as plt
 
-path = "./ocr/1-1.png"
+path = "./ocr/3-1.png"
 
 im1 = cv2.imread(path)
-im1 = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
 
-ret,thresh1=cv2.threshold(im1,127,255,cv2.THRESH_BINARY)
-ret,thresh2=cv2.threshold(im1,127,255,cv2.THRESH_BINARY_INV)
-ret,thresh3=cv2.threshold(im1,127,255,cv2.THRESH_TRUNC)
-ret,thresh4=cv2.threshold(im1,127,255,cv2.THRESH_TOZERO)
-ret,thresh5=cv2.threshold(im1,127,255,cv2.THRESH_TOZERO_INV)
+fastnose = cv2.fastNlMeansDenoisingColored(im1, h=15, templateWindowSize=7, searchWindowSize=21)
+
+
+
+upim=cv2.normalize(fastnose,dst=None,alpha=250,beta=10,norm_type=cv2.NORM_MINMAX)
+
+b, g, r = cv2.split(upim)
+
+split = r;
+
+ret,thresh1=cv2.threshold(split,127,255,cv2.THRESH_BINARY)
+ret,thresh2=cv2.threshold(split,127,255,cv2.THRESH_BINARY_INV)
+ret,thresh3=cv2.threshold(split,127,255,cv2.THRESH_TRUNC)
+ret,thresh4=cv2.threshold(split,127,255,cv2.THRESH_TOZERO)
+ret,thresh5=cv2.threshold(split,127,255,cv2.THRESH_TOZERO_INV)
 
 
 

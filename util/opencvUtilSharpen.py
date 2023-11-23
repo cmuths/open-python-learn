@@ -9,7 +9,7 @@ class Sharpen:
         # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # 模糊图像
-        blur = cv2.GaussianBlur(img, (1, 1), 25)
+        blur = cv2.GaussianBlur(img, (5, 5), 5)
 
         # 非锐化掩蔽
         sharpened = cv2.addWeighted(img, 1.5, blur, -0.5, 0)
@@ -34,12 +34,12 @@ class Sharpen:
 
     def gradient_operator(img):
         # 转换为灰度图像
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # 梯度算子增强边缘
         # 使用Sobel算子计算X和Y方向梯度
-        sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-        sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+        sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+        sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
         gradient = np.sqrt(sobelx ** 2 + sobely ** 2)
         # gradient = cv2.cvtColor(gradient, cv2.COLOR_GRAY2BGR)
 
@@ -48,10 +48,10 @@ class Sharpen:
 
     def laplacian_filter(img):
         # 转换为灰度图像
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # 拉普拉斯滤波器增强边缘
-        laplacian = cv2.Laplacian(gray, 6)
+        laplacian = cv2.Laplacian(img, 6)
         laplacian = np.uint8(np.absolute(laplacian))
         # laplacian = cv2.cvtColor(laplacian, cv2.COLOR_GRAY2BGR)
 

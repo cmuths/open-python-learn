@@ -5,32 +5,32 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 import numpy as np
 
-from util.opencvUtilSharpen import Sharpen as sharpen
+from util.ImageReflectionRemoval import ImageReflectionRemoval
+from util.opencvUtilSharpen import  Sharpen
+from util.border import  Border
 
 imgs = []
 titles = []
 threadCount = 2
+threshValue = 127
+
 # 原图片读取
-sim = cv.imread('ocr/20231014-101559.jpg')
-
-
+sim = cv.imread('ocr/9-1.png')
 imgs.append(cv.cvtColor(sim, cv.COLOR_BGR2RGB))
 titles.append('source')
+
 
 fastnose = cv.fastNlMeansDenoisingColored(sim, h=10, templateWindowSize=7, searchWindowSize=21)
 imgs.append(cv.cvtColor(fastnose, cv.COLOR_BGR2RGB))
 titles.append('fastnose')
 
-# kernel = np.ones((3,3),np.uint8)
-# fastnose = cv.erode(fastnose, kernel, iterations=2)
 
-# upim = cv.convertScaleAbs(fastnose,alpha=1.3,beta=0)
 upim=cv.normalize(fastnose,dst=None,alpha=250,beta=10,norm_type=cv.NORM_MINMAX)
 imgs.append(cv.cvtColor(upim, cv.COLOR_BGR2RGB))
 titles.append('upim')
 
 
-
+border = Border()
 
 
 sliptim = upim
@@ -47,14 +47,8 @@ if a is None:
     for x in [b, g, r]:
         # x = cv.fastNlMeansDenoising(x, h=10, templateWindowSize=7, searchWindowSize=21)
         imgs.append(x)
-        lower_gray = 210
-        upper_gray = 255
-        mask = cv.inRange(x, lower_gray, upper_gray)
-        x = cv.bitwise_and(x, x, mask=mask)
-        imgs.append(mask)
     for x in ['b', 'g', 'r']:
         titles.append(x)
-        titles.append(x+'-gray')
 else:
     for x in [b, g, r, a]:
         imgs.append(x)
@@ -66,18 +60,25 @@ else:
 for i in range(len(imgs)):
     if i <= threadCount:
         continue
-    # ret, binaryIm = cv.threshold(imgs[i], 127, 255, cv.THRESH_BINARY)
-    ret, tozeroIm = cv.threshold(imgs[i], 205, 255, cv.THRESH_TOZERO)
-    for x in [tozeroIm]:
-        imgs.append(x)
-    for x in ['tozeroIm']:
-        titles.append(titles[i]+'-'+x)
+    ret, tozeroIm = cv.threshold(imgs[i], threshValue, 255, cv.THRESH_TOZERO)
+    count = cv.countNonZero(tozeroIm)
+    print(titles[i] + '-' + str(count))
+    blurred = cv.GaussianBlur(tozeroIm, (7, 7), 0)
+    tozeroIm = cv.addWeighted(tozeroIm, 1, blurred, 2, 0)
+    filter = [0,1000000]
 
-for i in range(len(imgs)):
-    if i <= threadCount:
-        continue
-    cv.imwrite('ocr/'+titles[1]+'.png',imgs[i])
+    # if threshValue >= 210:
+    #     filter = [0,50000]
+    # elif  threshValue <= 127 :
+    #     filter = [100000,200000]
+    # else:
+    #     filter = [50000,100000]
 
+    if filter[0] <= count <= filter[1]:
+        for x in [tozeroIm]:
+            imgs.append(x)
+        for x in ['tozeroIm']:
+            titles.append(titles[i]+'-'+x)
 
 plt.figure(figsize=(30,20))
 for i in range(len(imgs)):
