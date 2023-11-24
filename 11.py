@@ -13,6 +13,10 @@ hist_2 = cv2.calcHist([image2], [0], None, [256], [0, 256])
 similarity = cv2.compareHist(hist_1, hist_2, cv2.HISTCMP_CORREL)
 print(f"Histogram Similarity Score: {similarity}")
 
+
+
+
+
 import cv2
 import numpy as np
 
@@ -50,15 +54,3 @@ image2 = cv2.imread('image2.jpg', cv2.IMREAD_GRAYSCALE)
 # 计算两个图像的平均差异值
 mse = np.mean((image1 - image2) ** 2)
 print(f"MSE Similarity Score: {mse}")
-
-import cv2
-import numpy as np
-from scipy import signal
-
-# 读取两个图像
-image1 = cv2.imread('image1.jpg', cv2.IMREAD_GRAYSCALE)
-image2 = cv2.imread('image2.jpg', cv2.IMREAD_GRAYSCALE)
-
-# 计算两个图像的峰值信噪比
-psnr = signal.peak_snr(image1, image2)
-print(f"PSNR Similarity Score: {psnr}")
